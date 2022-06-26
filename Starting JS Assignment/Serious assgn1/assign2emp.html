@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 2 Emp</title>
+    <script>
+
+        let emp=[{
+            empno:101,
+            empname:"Amey",
+            empemail:"amey@gmail.com",
+            empdeptid:10
+        },
+        {
+            empno:102,
+            empname:"Sumedh",
+            empemail:"sumedh@gmail.com",
+            empdeptid:20
+        },
+        {
+            empno:103,
+            empname:"Rosy",
+            empemail:"rosy@gmail.com",
+            empdeptid:30
+        },
+        {
+            empno:104,
+            empname:"Ridhima",
+            empemail:"ridhima@gmail.com",
+            empdeptid:10
+        },
+    ];
+
+
+        window.addEventListener('DOMContentLoaded',()=>{
+            console.log("Assignment 2 Dom loaded");
+            console.log(emp);
+
+            const empnum=document.querySelector('#empno');
+            empnum.addEventListener('blur',()=>{
+                console.log("blur on empnum");
+
+                let empnum=document.querySelector('#empno').value;
+                let output=getEmpDetails(empnum);
+
+                if(output.result){
+                    console.log(empnum)
+                    document.querySelector('#empname').value=output.empDetails.empname;
+                    document.querySelector('#empemail').value=output.empDetails.empemail;
+                    document.querySelector('#empdeptid').value=output.empDetails.empdeptid;
+                    document.querySelector('#msg').innerHTML="Employee details found";
+
+                    document.querySelector('#modify').disabled= false;
+                    document.querySelector('#remove').disabled= false;
+                    
+                }else{
+                    console.log(empnum) 
+                    document.querySelector('#empname').value="";
+                    document.querySelector('#empemail').value="";
+                    document.querySelector('#empdeptid').value="";
+                    document.querySelector('#msg').innerHTML="Employee details not found";
+
+                    document.querySelector('#add').disabled= false;  
+                }
+            });
+
+
+            //Event on add
+            const add=document.querySelector('#add');
+            add.addEventListener('click',()=>{
+                console.log("add event started");
+
+                let newemp={
+                    empno:parseInt(document.querySelector('#empno').value),
+                    empname: document.querySelector('#empname').value,
+                    empemail: document.querySelector('#empemail').value,
+                    empdeptid:parseInt(document.querySelector('#empdeptid').value)
+                };
+
+                if(addNewEmp(newemp)){
+                    document.querySelector('#msg').innerHTML="Employee Details Added Succesfuly";
+                }else{
+                    document.querySelector('#msg').innerHTML="Employee Details cant be Added-already exists";
+                }
+                console.log(emp);
+            });
+
+            //Event on modify
+            const modify=document.querySelector('#modify');
+            modify.addEventListener('click',()=>{
+                console.log("modify event working");
+
+                let editedemp={
+                    empno:parseInt(document.querySelector('#empno').value),
+                    empname: document.querySelector('#empname').value,
+                    empemail: document.querySelector('#empemail').value,
+                    empdeptid:parseInt(document.querySelector('#empdeptid').value)
+                };
+
+                if (modifyEmp(editedemp)){
+                    console.log("employ details edited");
+                    console.log(emp);
+                    document.querySelector('#msg').innerHTML="Employee Details modified Succesfuly";
+                }else{
+                    console.log("employ details not edited");
+                    document.querySelector('#msg').innerHTML="Employee Details cant be modified-not exists";
+                }
+
+            });
+
+
+            //Event on remove
+            const remove = document.querySelector('#remove');
+            remove.addEventListener('click',()=>{
+                console.log("remove event started");
+
+                let delemp = document.querySelector('#empno').value;
+
+                if(removeEmpDetails(delemp)){
+                    console.log('removed');
+                    console.log(emp);
+                    document.querySelector('#msg').innerHTML="Employee Details removed Succesfuly";
+                }else{
+                    console.log(' not removed');
+                    document.querySelector('#msg').innerHTML="Employee Details not found";
+                    document.querySelector('#modify').disabled= true;
+                }
+            });
+
+            //event on view all
+            const viewall=document.querySelector('#viewall');
+
+            viewall.addEventListener('click',()=>{
+                console.log('view all started');
+
+                let msgy=viewAll();
+                document.querySelector('#msg').innerHTML="Showing details for all employee";
+                document.querySelector('#msgy').innerHTML="Employee Details" +msgy;
+
+            });
+
+            //Event on view by deptId
+            const viewdid=document.querySelector('#viewdid');
+            
+            viewdid.addEventListener('click',()=>{
+                console.log('view by depId working');
+
+                let deptId=parseInt(document.querySelector('#empdeptid').value);
+
+                document.querySelector('#msgy').innerHTML=showEmp(deptId);
+                document.querySelector('#msg').innerHTML="Showing results for deptId "+deptId;
+            });
+
+        
+
+
+
+            //All functions are here
+
+            function getEmpDetails(empnum1){
+                let output={result:false,empDetails:{}};
+                for(let i=0;i<emp.length;i++){
+                    if(emp[i].empno == empnum1){
+                        output.empDetails=emp[i];
+                        output.result=true
+                        return output;
+                    }
+                }
+                    return output;
+            }
+
+
+            function addNewEmp(newemp1){
+                for(let i=0;i<emp.length;i++){
+                    if(emp[i].empno==newemp1.empno)
+                        return false;
+                    else{
+                        emp.push(newemp1);
+                        return true;
+                    }     
+                }
+            }
+
+
+            function modifyEmp(editedemp1){
+                for(let i=0;i<emp.length;i++){
+                   if(emp[i].empno==editedemp1.empno && emp[i].empname==editedemp1.empname 
+                   && emp[i].empemail==editedemp1.empemail && emp[i].empdeptid==editedemp1.empdeptid)
+                   
+                   return false;
+                   else{
+                    emp[i].empno=editedemp1.empno;
+                    emp[i].empname=editedemp1.empname;
+                    emp[i].empemail=editedemp1.empemail;
+                    emp[i].empdeptid=editedemp1.empdeptid;
+                    return true;
+                   }
+                }
+            }
+
+            function removeEmpDetails(delemp1){
+                for(let i=0;i<emp.length;i++){
+                    if(emp[i].empno==delemp1){
+                    let tempemp={};
+                    tempemp=emp[i];
+                    emp.splice(i,1);
+                    return true;
+                    }
+                }
+                return false;
+            }
+
+
+            function viewAll(){
+                let msgy='';
+                for(let i=0,j=i+1;i<emp.length;i++,j++){
+                    msgy += "<br/>" +[j]+". EmpNo :"+emp[i].empno +", EmpName :"+emp[i].empname+ ", EmpEmail :"+emp[i].empemail+ 
+                            ", EmpDeptID :"+emp[i].empdeptid ;
+                }
+                return msgy;
+            }
+
+            function showEmp(deptId1){
+                let msg="";
+                let count=0;
+
+                for(let i=0;i<emp.length;i++){
+                    if(emp[i].empdeptid === deptId1){
+                    msg += "<br/>" +"EmpNo :"+emp[i].empno +", EmpName :"+emp[i].empname+ ", EmpEmail :"+emp[i].empemail+ 
+                            ", EmpDeptID :"+emp[i].empdeptid ;
+                        count=count+1;
+                    }
+                }
+                if(count==0){
+                 msg ="Employee not found";
+                }
+                return msg;
+            }
+
+                
+
+
+        });
+
+    </script>
+</head>
+<body>
+    <h1>Assignment 2</h1>
+
+    <input type="text" placeholder="Employee Number" id="empno"/> <span id="msg"> Message</span>
+    <br/>
+    <input type="text" placeholder="Employee Name" id="empname"/>
+    <br/>
+    <input type="text" placeholder="Employee E-mail" id="empemail"/>
+    <br/>
+    <input type="text" placeholder="Employee DeptId" id="empdeptid"/>
+    <br/><hr/>
+    <button id="add"  disabled>Add</button>
+    <button id="modify" disabled>Modify</button>
+    <button id="remove" disabled>Remove</button>
+    <button id="viewall" >View All</button>
+    <button id="viewdid" >View by DeptId</button>
+    <br/>
+    <h2 id="msgy">Message</h2>
+</body>
+</html>
